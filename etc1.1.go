@@ -19,23 +19,23 @@ type etcManager struct {
  * @Description:数字证书结构体
  */
 type DigitalCertificate struct {
-	ID int64					// 证书序号
-	PublicKey []byte			// 所属人公钥
-	BasicInfo []byte			// 所属人基本信息Hash
-	ChainID  string				// 证书所在链
-	Expires int64				// 证书截止时间
-	State int8					// 当前证书签名状态 0:不存在 1:未开始 2:交管局系统已签名 3:银行财务系统已签名 4:省中心已签名
-	Burn bool					// 注销
-	SettlementSig []byte		// 省结算中心签名
-	BankSig		  []byte		// 银行财务系统签名
-	TrafficManagementSig []byte	// 交管局系统签名
+	ID                   int64  // 证书序号
+	PublicKey            []byte // 所属人公钥
+	BasicInfo            []byte // 所属人基本信息Hash
+	ChainID              string // 证书所在链
+	Expires              int64  // 证书截止时间
+	State                int8   // 当前证书签名状态 0:不存在 1:未开始 2:交管局系统已签名 3:银行财务系统已签名 4:省中心已签名
+	Burn                 bool   // 注销
+	SettlementSig        []byte // 省结算中心签名
+	BankSig              []byte // 银行财务系统签名
+	TrafficManagementSig []byte // 交管局系统签名
 }
 
 type keyHistory struct {
 	Value string
 	// TxHash []byte
-	BlockNum uint64
-	TxNum int32
+	BlockNum  uint64
+	TxNum     int32
 	IsDeleted bool
 	// Timestamp int64
 }
@@ -105,7 +105,7 @@ func (e etcManager) Invoke(stub sdk.ContractStub) common.InvocationResponse {
 	args := stub.Parameters()
 	if funcName == "getMyCertificate" {
 		return getMyCertificate(stub, args)
-	}else {
+	} else {
 		// 验证权限
 		kind, key := args[0], args[1]
 		if !VerifyAuth(stub, kind, key) {
@@ -191,7 +191,7 @@ func storeTotalCertificateNum(stub sdk.ContractStub, kind []byte, arg [][]byte) 
  * @param stub
  * @return common.InvocationResponse
  */
-func getNowCertificateNum(stub sdk.ContractStub) common.InvocationResponse  {
+func getNowCertificateNum(stub sdk.ContractStub) common.InvocationResponse {
 	numBytes, err := stub.GetKV("totalCertificate")
 	if err != nil {
 		return sdk.Error("读取totalCertificate失败")
@@ -232,7 +232,7 @@ func storeBasicInfoHash(stub sdk.ContractStub, kind []byte, arg [][]byte) common
  * @param arg
  * @return common.InvocationResponse
  */
-func getBasicInfoHash(stub sdk.ContractStub, arg [][]byte) common.InvocationResponse  {
+func getBasicInfoHash(stub sdk.ContractStub, arg [][]byte) common.InvocationResponse {
 	const numOfArgs = 1
 	if len(arg) < numOfArgs {
 		return sdk.Error("输入参数错误")
@@ -245,13 +245,12 @@ func getBasicInfoHash(stub sdk.ContractStub, arg [][]byte) common.InvocationResp
 	return sdk.Success(infoHash)
 }
 
-
 /**
  * @Description:生成证书
  * @param stub
  * @return common.InvocationResponse
  */
-func generateCertificate(stub sdk.ContractStub, kind []byte, arg [][]byte) common.InvocationResponse  {
+func generateCertificate(stub sdk.ContractStub, kind []byte, arg [][]byte) common.InvocationResponse {
 	// 1. 判断权限
 	if string(kind) != "settlementKey" {
 		return sdk.Error("权限不足")
@@ -276,13 +275,13 @@ func generateCertificate(stub sdk.ContractStub, kind []byte, arg [][]byte) commo
 	idBytes, _ := stub.GetKV("totalCertificate")
 	id, _ := strconv.Atoi(string(idBytes))
 	newCertificate := &DigitalCertificate{
-		ID:                 int64(id),
-		PublicKey:          publicKey,
-		BasicInfo:          infoHash,
-		ChainID:			  stub.ChainID(),
-		Expires:            int64(expires),
-		State:              1,
-		Burn:               false,
+		ID:        int64(id),
+		PublicKey: publicKey,
+		BasicInfo: infoHash,
+		ChainID:   stub.ChainID(),
+		Expires:   int64(expires),
+		State:     1,
+		Burn:      false,
 	}
 	// 6. 总量+1
 	err = stub.PutKV("totalCertificate", []byte(strconv.Itoa(id+1)))
@@ -338,7 +337,7 @@ func getInitCertificate(stub sdk.ContractStub, arg [][]byte) common.InvocationRe
  * @param arg  1:证书ID 2:签名
  * @return common.InvocationResponse
  */
-func attachSigning(stub sdk.ContractStub, kind []byte, arg [][]byte) common.InvocationResponse  {
+func attachSigning(stub sdk.ContractStub, kind []byte, arg [][]byte) common.InvocationResponse {
 	const numOfArgs = 2
 	if len(arg) < numOfArgs {
 		return sdk.Error("输入参数错误")
@@ -416,7 +415,7 @@ func getMyCertificate(stub sdk.ContractStub, arg [][]byte) common.InvocationResp
 		return sdk.Error("银行财务系统已签名，请耐心等待")
 	case 4:
 		// 返回证书
-		s := fmt.Sprintf("DigitalCertificate的序号是%d,所属人公钥是%s,所属人基本信息Hash是%s,证书截止时间是%d,当前证书状态是%d,省中心签名是%s,交管局签名是%s,银行签名是%s", dc.ID, dc.PublicKey, dc.BasicInfo, dc.Expires, dc.State, dc.SettlementSig, dc.TrafficManagementSig ,dc.BankSig)
+		s := fmt.Sprintf("DigitalCertificate的序号是%d,所属人公钥是%s,所属人基本信息Hash是%s,证书截止时间是%d,当前证书状态是%d,省中心签名是%s,交管局签名是%s,银行签名是%s", dc.ID, dc.PublicKey, dc.BasicInfo, dc.Expires, dc.State, dc.SettlementSig, dc.TrafficManagementSig, dc.BankSig)
 		log.Info(s)
 		dcJSON, err := dc.Marshal()
 		if err != nil {
@@ -486,7 +485,7 @@ func depositFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) co
 	}
 
 	address := string(args[0])
-	value,err := strconv.Atoi(string(args[1]))
+	value, err := strconv.Atoi(string(args[1]))
 	if err != nil {
 		fmt.Printf("The ETC size is not int type\n")
 		return sdk.Error("The ETC size is not int type")
@@ -497,16 +496,16 @@ func depositFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) co
 		fmt.Printf("getkv error, the err is :%s\n", err.Error())
 		return sdk.Error("get kv failed")
 	}
-	intOldValue,err := strconv.Atoi(string(oldValue))
+	intOldValue, err := strconv.Atoi(string(oldValue))
 	if err != nil {
 		fmt.Printf("The ETC size is not int type\n")
 		return sdk.Error("The ETC size is not int type")
 	}
-	err = stubInterface.PutKV(address, []byte(strconv.Itoa(intOldValue + value)))
+	err = stubInterface.PutKV(address, []byte(strconv.Itoa(intOldValue+value)))
 	if err != nil {
 		return sdk.Error(err.Error())
 	}
-	info := fmt.Sprintf("质押成功,地址:%s,质押金额:%d,余额:%d", address, value, intOldValue + value)
+	info := fmt.Sprintf("质押成功,地址:%s,质押金额:%d,余额:%d", address, value, intOldValue+value)
 	return sdk.Success([]byte(info))
 	// depositFundsResponse := &depositFundsResponse {message :"质押资金成功！", address :address, amount :value, balance :intOldValue + value}
 	// responseData, err := depositFundsResponse.Marshal()
@@ -539,7 +538,7 @@ func deductFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) com
 	}
 
 	address := string(args[0])
-	value,err := strconv.Atoi(string(args[1]))
+	value, err := strconv.Atoi(string(args[1]))
 	if err != nil {
 		fmt.Printf("The ETC size is not int type\n")
 		return sdk.Error("The ETC size is not int type")
@@ -550,15 +549,15 @@ func deductFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) com
 		fmt.Printf("getkv error, the err is :%s\n", err.Error())
 		return sdk.Error("get kv failed")
 	}
-	intOldValue,_ := strconv.Atoi(string(oldValue))
-	if(intOldValue < value){
+	intOldValue, _ := strconv.Atoi(string(oldValue))
+	if intOldValue < value {
 		return sdk.Error("余额不足，抵扣失败！")
 	}
-	err = stubInterface.PutKV(address, []byte(strconv.Itoa(intOldValue - value)))
+	err = stubInterface.PutKV(address, []byte(strconv.Itoa(intOldValue-value)))
 	if err != nil {
 		return sdk.Error(err.Error())
 	}
-	info := fmt.Sprintf("抵扣成功,地址:%s,抵扣金额:%d,余额:%d", address, value, intOldValue - value)
+	info := fmt.Sprintf("抵扣成功,地址:%s,抵扣金额:%d,余额:%d", address, value, intOldValue-value)
 	return sdk.Success([]byte(info))
 	// deductFundsResponse := &deductFundsResponse{message :"质押抵扣成功！", address :address, amount :value, balance :intOldValue - value}
 	// responseData, err := json.Marshal(deductFundsResponse)
@@ -598,7 +597,7 @@ func transferFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) c
 	// 	return errCheck
 	// }
 
-	value,err := strconv.Atoi(string(args[2]))
+	value, err := strconv.Atoi(string(args[2]))
 	if err != nil {
 		fmt.Printf("The ETC size is not int type\n")
 		return sdk.Error("The ETC size is not int type")
@@ -614,22 +613,22 @@ func transferFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) c
 		fmt.Printf("getkv error, the err is :%s\n", err.Error())
 		return sdk.Error("get kv failed")
 	}
-	intOldValueFrom,_ := strconv.Atoi(string(oldValueFrom))
-	intOldValueTo,_ := strconv.Atoi(string(oldValueTo))
-	if(intOldValueFrom < value){
+	intOldValueFrom, _ := strconv.Atoi(string(oldValueFrom))
+	intOldValueTo, _ := strconv.Atoi(string(oldValueTo))
+	if intOldValueFrom < value {
 		info := fmt.Sprintf("余额不足，转账失败！ 地址:%s，余额:%d，需要额度:%d ", addressFrom, intOldValueFrom, value)
 		return sdk.Error(info)
 	}
-	err = stubInterface.PutKV(addressFrom, []byte(strconv.Itoa(intOldValueFrom - value)))
+	err = stubInterface.PutKV(addressFrom, []byte(strconv.Itoa(intOldValueFrom-value)))
 	if err != nil {
 		return sdk.Error(err.Error())
 	}
-	err = stubInterface.PutKV(addressTo, []byte(strconv.Itoa(intOldValueTo + value)))
+	err = stubInterface.PutKV(addressTo, []byte(strconv.Itoa(intOldValueTo+value)))
 	if err != nil {
 		return sdk.Error(err.Error())
 	}
 
-	info := fmt.Sprintf("转账成功,From地址:%s,抵扣金额:%d,余额:%d,To地址:%s,余额:%d", addressFrom, value, intOldValueFrom - value, addressTo, intOldValueTo + value)
+	info := fmt.Sprintf("转账成功,From地址:%s,抵扣金额:%d,余额:%d,To地址:%s,余额:%d", addressFrom, value, intOldValueFrom-value, addressTo, intOldValueTo+value)
 	return sdk.Success([]byte(info))
 	// transferFundsResponse := &transferFundsResponse{message:"转账成功！", addressFrom:addressFrom, amount:value, balanceFrom:intOldValueFrom - value, addressTo:addressTo, balanceTo:intOldValueTo + value}
 	// responseData, err := json.Marshal(transferFundsResponse)
@@ -655,7 +654,7 @@ func getFunds(stubInterface sdk.ContractStub, args [][]byte) common.InvocationRe
 		errInfo := fmt.Sprintf("Get the key:%s failed", address)
 		return sdk.Error(errInfo)
 	}
-	intValue,_ := strconv.Atoi(string(value))
+	intValue, _ := strconv.Atoi(string(value))
 	info := fmt.Sprintf("查询成功,地址:%s,余额:%d", address, intValue)
 	return sdk.Success([]byte(info))
 	// getFundsResponse := &getFundsResponse{message:"查询成功！", address:address, balance:intValue}
@@ -719,7 +718,7 @@ func initFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) commo
 // 	}
 // 	defer iterator.Close()
 
-// 	var historyArray []int 
+// 	var historyArray []int
 // 	var count = 0
 // 	for {
 // 		b := iterator.Next()
@@ -747,49 +746,47 @@ func initFunds(stubInterface sdk.ContractStub, kind []byte, args [][]byte) commo
 // 	return sdk.Success(historyBytes)
 // }
 func getFundsHistory(stubInterface sdk.ContractStub, args [][]byte) common.InvocationResponse {
-    // stubInterface.Debugf("Enter getKeyHistory")
-    const numOfArgs = 1
-    if len(args) != numOfArgs {
-        // stubInterface.Errorf("the args for getKeyHistory is not correct")
-        return sdk.Error("the args for getKeyHistory is not correct")
-    }
+	// stubInterface.Debugf("Enter getKeyHistory")
+	const numOfArgs = 1
+	if len(args) != numOfArgs {
+		// stubInterface.Errorf("the args for getKeyHistory is not correct")
+		return sdk.Error("the args for getKeyHistory is not correct")
+	}
 
-    key := string(args[0])
+	key := string(args[0])
 
-    iterator, err := stubInterface.GetKeyHistoryIterator(key)
-    if err != nil {
-        return sdk.Error("GetKeyHistoryIterator 出错！")
+	iterator, err := stubInterface.GetKeyHistoryIterator(key)
+	if err != nil {
+		return sdk.Error("GetKeyHistoryIterator 出错！")
 		// return sdk.Error(err.Error())
-    }
-    defer iterator.Close()
+	}
+	defer iterator.Close()
 
-    var historyArray []keyHistory
-    for {
-        b := iterator.Next()
-        if !b {
-            // stubInterface.Debugf("the iterator break")
-            break
-        }
+	var historyArray []keyHistory
+	for {
+		b := iterator.Next()
+		if !b {
+			// stubInterface.Debugf("the iterator break")
+			break
+		}
 
-        var history keyHistory
-        history.Value = string(iterator.Value())
-        // history.TxHash = iterator.TxHash()
-        history.BlockNum, history.TxNum = iterator.Version()
-        history.IsDeleted = iterator.IsDeleted()
-        // history.Timestamp = iterator.Timestamp()
-        historyArray = append(historyArray, history)
-    }
+		var history keyHistory
+		history.Value = string(iterator.Value())
+		// history.TxHash = iterator.TxHash()
+		history.BlockNum, history.TxNum = iterator.Version()
+		history.IsDeleted = iterator.IsDeleted()
+		// history.Timestamp = iterator.Timestamp()
+		historyArray = append(historyArray, history)
+	}
 
-    historyMapBytes, err := json.Marshal(historyArray)
-    if err != nil {
-        return sdk.Error(err.Error())
-    }
-    // stub.Debugf("historyArray is %v", historyArray)
+	historyMapBytes, err := json.Marshal(historyArray)
+	if err != nil {
+		return sdk.Error(err.Error())
+	}
+	// stub.Debugf("historyArray is %v", historyArray)
 
-    return sdk.Success(historyMapBytes)
+	return sdk.Success(historyMapBytes)
 }
-
-
 
 func (dc DigitalCertificate) Marshal() ([]byte, error) {
 	return json.Marshal(dc)
@@ -808,4 +805,3 @@ func Unmarshal(data []byte) (*DigitalCertificate, error) {
 func main() {
 	smstub.Start(&etcManager{})
 }
-

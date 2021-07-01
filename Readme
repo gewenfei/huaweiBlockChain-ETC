@@ -1,7 +1,5 @@
+# 华为云区块链大赛ETC项目
+## 合约开发环境
 请将智能合约的go文件放入本文件同级路径下编译
-示例：
-contract/
-proto/
-go.mod
-Readme
-huaweichain.go
+## 将合约go文件打包为zip文件
+## 安装链代码，实例化链代码
