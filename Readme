@@ -1,0 +1,7 @@
+请将智能合约的go文件放入本文件同级路径下编译
+示例：
+contract/
+proto/
+go.mod
+Readme
+huaweichain.go

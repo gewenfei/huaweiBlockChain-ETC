@@ -1,0 +1,19 @@
+质押资金:
+    调用格式:   (address,value)(publickey123,100)
+    返回格式:   质押成功,地址:publickey123,质押金额:100,余额:100
+
+抵扣资金
+    调用格式:   (address,value) (publickey123,10)
+    返回格式:   抵扣成功,地址:publickey123,抵扣金额:10,余额:90
+
+转移资金
+    调用格式:   (addressFrom,addressTo,value)(publickey123,publickey456,10)
+    返回格式:   转账成功,From地址:publickey123,抵扣金额:10,余额:80,To地址:publickey456,余额:10
+
+查询资金
+    调用格式:   (address)(publickey123)
+    返回格式:   查询成功,地址:publickey123,余额:80
+
+初始化资金
+    调用格式:   (address,value)(publickey456,100)
+    返回格式: 初始化成功,地址:publickey456,余额:100 
