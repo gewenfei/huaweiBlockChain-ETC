@@ -1,0 +1,5 @@
+ORGNAMEHASH="b764a53c2fa20e5b01e2f3c997bba1375ade6c11"
+CHAIN_NAME="huaweichain"
+CONTRACT_NAME="etc007"
+SDK_CONFIG_FILE="bcs-sb08wi-huaweichain-sdk-config.yaml"
+EIP="139.9.44.90"
