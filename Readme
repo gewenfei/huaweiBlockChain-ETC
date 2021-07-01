@@ -1,4 +1,4 @@
-华为云区块链大赛ETC项目
+#华为云区块链大赛ETC项目
 一、合约开发环境
 https://support.huaweicloud.com/bcs/index.html
 1.请将智能合约的go文件放入本文件同级路径下编译
