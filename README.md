@@ -9,6 +9,9 @@
 3.安装链代码，实例化链代码
 ## 二、SDK测试方式
 1.linux中配置环境
+
 2.下载相关证书文件，注意路径
+
 2.修改configure文件信息
+
 3.修改startGoClient.sh
